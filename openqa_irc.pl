@@ -7,6 +7,20 @@ use base qw( Bot::BasicBot );
 use Mojo::UserAgent;
 
 
+=pod
+Ideas and TODOS what to implement and where to look for cool stuff:
+https://metacpan.org/pod/Bot::BasicBot::Pluggable::Module::WWWShorten
+https://github.com/CloudBotIRC/CloudBot
+https://metacpan.org/pod/Bot::BasicBot::Pluggable::Module::Crontab
+https://metacpan.org/pod/Bot::BasicBot::Pluggable::Module::GitHub
+https://metacpan.org/pod/Bot::BasicBot::Pluggable::Module::Notes
+https://metacpan.org/pod/Bot::BasicBot::Pluggable::Module::Shutdown
+https://metacpan.org/pod/Bot::BasicBot::Pluggable::Module::Loader
+https://metacpan.org/pod/Bot::BasicBot::Pluggable::Module::Log
+https://metacpan.org/pod/Bot::BasicBot::Pluggable
+=cut
+
+
 my $ua = Mojo::UserAgent->new;
 my $host = 'openqa.suse.de';
 
