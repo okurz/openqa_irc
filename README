@@ -12,6 +12,7 @@ openQA, nothing especially fancy or interesting.
 
     cpanm Bot::BasicBot
     cpanm Mojo::UserAgent
+    cpanm POE::Component::SSLify
 
 
 * Call the script
