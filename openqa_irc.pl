@@ -23,6 +23,7 @@ https://metacpan.org/pod/Bot::BasicBot::Pluggable
 
 my $ua = Mojo::UserAgent->new;
 my $host = 'openqa.suse.de';
+my $nick = 'openqa-devel';
 
 # the 'said' callback gets called when someone says something in
 # earshot of the bot.
@@ -71,5 +72,5 @@ MyBot->new(
     ssl => 1,
     port => 6697,
     channels => [ '#openqa-test' ],
-    nick => 'openqa',
+    nick => $nick,
 )->run();
