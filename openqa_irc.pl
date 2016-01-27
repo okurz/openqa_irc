@@ -2,7 +2,7 @@
 use warnings;
 use strict;
 
-package MyBot;
+package OpenQABot;
 use base qw( Bot::BasicBot );
 use Mojo::UserAgent;
 
@@ -67,7 +67,7 @@ sub help { "Help for 'openQA-bot'
     Write a message in a room I am in starting with '!' as a prefix.
     Try the following commands: perl, last builds" }
 
-MyBot->new(
+OpenQABot->new(
     server => 'irc.suse.de',
     ssl => 1,
     port => 6697,
