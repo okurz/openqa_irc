@@ -47,6 +47,7 @@ Example for a productive instance:
  settings:
    OpenQA:
      host: openqa.opensuse.org
+     staging_dashboard: 'https://build.opensuse.org/project/staging_projects/openSUSE:Factory/'
  store:
    type: Deep
    file: openqa.deep
