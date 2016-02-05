@@ -1,10 +1,12 @@
-#!/usr/bin/perl
-use warnings;
-use strict;
+package Bot::BasicBot::Pluggable::Module::OpenQA;
 
-package OpenQABot;
-use base qw( Bot::BasicBot );
+use base 'Bot::BasicBot::Pluggable::Module';
+
+use strict;
+use warnings;
+
 use Mojo::UserAgent;
+use Carp qw(croak);
 
 
 =pod
@@ -15,29 +17,34 @@ https://metacpan.org/pod/Bot::BasicBot::Pluggable::Module::Crontab
 https://metacpan.org/pod/Bot::BasicBot::Pluggable::Module::GitHub
 https://metacpan.org/pod/Bot::BasicBot::Pluggable::Module::Notes
 https://metacpan.org/pod/Bot::BasicBot::Pluggable::Module::Shutdown
-https://metacpan.org/pod/Bot::BasicBot::Pluggable::Module::Loader
 https://metacpan.org/pod/Bot::BasicBot::Pluggable::Module::Log
-https://metacpan.org/pod/Bot::BasicBot::Pluggable
 =cut
 
 
 my $ua = Mojo::UserAgent->new;
-my $host = 'openqa.suse.de';
-my $nick = 'openqa-devel';
-my $channel = '#openqa-test';
 
-# the 'said' callback gets called when someone says something in
-# earshot of the bot.
-sub said {
-    my ($self, $message) = @_;
-    return unless ($message->{body} =~ /^!/);
-    if ($message->{body} =~ /\bperl\b/) {
+
+sub init {
+    my ($self) = @_;
+    $self->config({
+            notice_period_ready  => 600,
+            host => 'openqa.opensuse.org',
+        });
+
+    $self->{tick_count} = 0;
+}
+
+sub told {
+    my ($self, $mess) = @_;
+    return unless ($mess->{body} =~ /^!/);
+    if ($mess->{body} =~ /\bperl\b/) {
         return "I hear Ruby is better than perl..";
     }
-    elsif ($message->{body} =~ /help/) {
+    elsif ($mess->{body} =~ /help/) {
         return help();
     }
-    elsif ($message->{body} =~ /\blast builds\b/) {
+    elsif ($mess->{body} =~ /\blast builds\b/) {
+        my $host = $self->get('host');
         my $products = $ua->get($host)->res->dom->find('h2 > a');
         my $products_text = $products->map('text')->join("\n");
         # TODO replace hardcoded by search
@@ -49,29 +56,29 @@ sub said {
         my $last_builds = $ua->get($host.$build->{href})->res->dom->find('.col-md-4 > h4 a');
         return "Last builds for $product: ".$last_builds->map('text')->join(", ");
     }
-    #elsif ($message->{body} =~ /\blast review\b/) {
+    #elsif ($mess->{body} =~ /\blast review\b/) {
     #    my $products = $ua->get($host)->res->dom->find('h2 > a');
     #}
 }
 
 sub tick {
     my ($self) = @_;
-    $self->notice(
-        channel => $channel,
-        body => "openQA bot ready for service, msg me 'help' for details"
-    );
-    return 600;
+    croak if scalar @{$self->bot->{channels}} > 1;
+    $self->{tick_count} += 5; # tick is called in 5 second interval
+
+    if ($self->{tick_count} % ($self->get('notice_period_ready')) == 0) {
+        $self->bot->notice(
+            channel => $self->bot->{channels}->[0],  # we just select the first if multiple
+            body => "openQA bot ready for service, msg me 'help' for details"
+        );
+    }
 }
 
 # help text for the bot
 sub help { "Help for 'openQA-bot'
     Write a message in a room I am in starting with '!' as a prefix.
-    Try the following commands: perl, last builds" }
+    Try the following commands: perl, last builds"
+}
 
-OpenQABot->new(
-    server => 'irc.suse.de',
-    ssl => 1,
-    port => 6697,
-    channels => [ $channel ],
-    nick => $nick,
-)->run();
+1;
+
