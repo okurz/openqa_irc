@@ -10,23 +10,27 @@ openQA, nothing especially fancy or interesting.
 
 * Install requirements
 
-    cpanm Bot::BasicBot
+    cpanm Bot::BasicBot::Pluggable
     cpanm Mojo::UserAgent
     cpanm POE::Component::SSLify
 
 
 * Call the script
 
-    perl openqa_irc.pl
+    perl openqa_irc
 
 
 * Talk to the bot, e.g. say "!help"
 
 
+* By default the bot starts in "development mode". For a productive instance
+  it is recommended to provide a configuration file, see instructions in
+  `openqa_irc` itself.
+
 
 ## Communication
 
-If you have questions, visit me on irc.freenode.net in #opensuse-factory
+If you have questions, visit me in irc://chat.freenode.net/opensuse-factory
 
 
 ## Contribute

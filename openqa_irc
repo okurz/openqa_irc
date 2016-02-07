@@ -1,0 +1,62 @@
+#!/usr/bin/perl
+use warnings;
+use strict;
+
+use App::Bot::BasicBot::Pluggable;
+
+my $nick = 'openqa-devel';
+my $channel = '#openqa-test';
+
+my $app = App::Bot::BasicBot::Pluggable->new_with_options(
+        server => 'irc.suse.de',
+        port => 6697,
+        channel => [ $channel ], # beware the singular when using pluggable app
+        nick => $nick,
+        module => [ 'Auth', 'Loader', 'OpenQA' ],
+    );
+$app->bot->{ssl} = 1; # cause pluggable app does not forward ssl
+$app->run();
+
+__END__
+
+=head1 NAME
+
+openqa - An openQA bot based on App::Bot::BasicBot::Pluggable
+
+=head1 SYNOPSIS
+
+  openqa_irc --nick openqa --server chat.freenode.net --channel opensuse-factory
+
+=head1 OPTIONS
+
+=over 4
+
+See L<bot-basicbot-pluggable> for details. Additionally supported options: None so far
+
+=head1 CONFIGFILE
+
+Specify I<--configfile> with a path to a YAML configuration file like for
+L<bot-basicbot-pluggable>. The openQA component takes additional arguments.
+If not specified, defaults are used.
+Example for a productive instance:
+
+ server: chat.freenode.net
+ nick: openqa
+ channel:
+  - '#opensuse-factory'
+ settings:
+   OpenQA:
+     host: openqa.opensuse.org
+     staging_dashboard: 'https://build.opensuse.org/project/staging_projects/openSUSE:Factory/'
+ store:
+   type: Deep
+   file: openqa.deep
+
+
+=head1 SEE ALSO
+
+L<Bot::BasicBot::Pluggable>
+
+=back
+
+=cut
