@@ -48,6 +48,10 @@ sub _gather_error_details {
     # same anyway
     my $failed_detail = $ua->get($openqa_failed->first->{href})->res->dom->find('span.resborder_fail');
     return unless $failed_detail;
+    unless ($failed_detail->first) {
+        carp "No content received for $failed_detail";
+        return;
+    }
     my $failed_detail_url = $failed_detail->first->parent->{href};
     chomp(my $error_details = $ua->get("$host/$failed_detail_url")->res->dom->find('#content .box pre')->map('text')->join(', '));
     return $error_details ? ". Details of first error: $error_details" : '';
@@ -92,7 +96,7 @@ sub _poll_staging {
     my $failed_str = join ', ', map { $_ . ' (' . join(', ', @{$openqa_failed_map{$_}}) . ')' } keys %openqa_failed_map;
 
     if ($defcon_level < 5 and !($failed_str eq '')) {
-        $failed_str .= _gather_error_details($self, $ua, $openqa_failed);
+        $failed_str .= _gather_error_details($self, $ua, $openqa_failed) // '';
     }
 
     return $failed_str;
