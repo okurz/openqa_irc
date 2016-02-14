@@ -83,6 +83,7 @@ sub _shorten_url {
 sub _poll_staging {
     my ($self) = @_;
     my $url = $self->get('staging_dashboard');
+    confess "missing staging URL" unless $url;
     my $openqa_failed = $ua->get($url  => {Accept => '*/*'})->res->dom->find('.openqa-failed');
     my %openqa_failed_map = ();
     # group tests by module name to save some space
@@ -93,7 +94,9 @@ sub _poll_staging {
         #my $test_heading = $ua->get($_->{href})->res->dom->at('#info_box .panel-heading')->text;
         #$test_heading =~ s/^.*Build[^-]*-//;
     };
-    my $failed_str = join ', ', map { $_ . ' (' . join(', ', @{$openqa_failed_map{$_}}) . ')' } keys %openqa_failed_map;
+    # sorting on keys to make comparison of runs possible but still not
+    # optimal as we loose which module failed first
+    my $failed_str = join ', ', map { $_ . ' (' . join(', ', @{$openqa_failed_map{$_}}) . ')' } sort keys %openqa_failed_map;
 
     if ($defcon_level < 5 and !($failed_str eq '')) {
         $failed_str .= _gather_error_details($self, $ua, $openqa_failed) // '';
