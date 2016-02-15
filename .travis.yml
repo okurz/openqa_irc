@@ -1,0 +1,6 @@
+language: perl
+install:
+  - cpanm -nq --installdeps --with-feature=coverage .
+  - gem install sass
+script:
+  - make coverage
