@@ -1,0 +1,5 @@
+language: perl
+install:
+  - cpanm -nq --installdeps --with-feature=coverage .
+script:
+  - make coverage

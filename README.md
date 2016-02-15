@@ -1,4 +1,4 @@
-# openqa_irc
+# openqa_irc [![Build Status](https://travis-ci.org/okurz/openqa_irc.svg?branch=master)](https://travis-ci.org/okurz/openqa_irc)
 
 IRC bot for openQA in perl
 
