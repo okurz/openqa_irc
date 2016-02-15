@@ -1,5 +1,9 @@
 language: perl
 install:
+  - cpanm -nq Devel::Cover::Report::Coveralls
   - cpanm -nq --installdeps --with-feature=coverage .
 script:
-  - make coverage
+  - PERL5OPT=-MDevel::Cover=-coverage,statement,branch,condition,path,subroutine prove -lrsv t
+  - cover
+after_success:
+  - cover -report coveralls
