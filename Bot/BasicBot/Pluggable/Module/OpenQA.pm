@@ -117,7 +117,7 @@ sub told {
     }
     elsif ($mess->{body} =~ /defcon/) {
         my $new_defcon = $mess->{body};
-        $new_defcon =~ s/^.*defcon.*([1-5])/$1/g;
+        $new_defcon =~ s/^.*defcon\s*(\d+)/$1/;
         unless (1 <= $new_defcon && $new_defcon <= 5) {
             return "Err, I won't accept that. Try a number between 1 and 5, maybe? If you need to ask you are probably NOT ALLOWED to request DEFCON 1";
         }
