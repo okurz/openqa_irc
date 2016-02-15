@@ -10,9 +10,7 @@ openQA, nothing especially fancy or interesting.
 
 * Install requirements
 
-    cpanm Bot::BasicBot::Pluggable
-    cpanm Mojo::UserAgent
-    cpanm POE::Component::SSLify
+    cpanm .
 
 
 * Call the script
