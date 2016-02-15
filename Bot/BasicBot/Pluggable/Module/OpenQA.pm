@@ -121,7 +121,7 @@ sub told {
         unless (1 <= $new_defcon && $new_defcon <= 5) {
             return "Err, I won't accept that. Try a number between 1 and 5, maybe? If you need to ask you are probably NOT ALLOWED to request DEFCON 1";
         }
-        if ($new_defcon == 1 and not $mess->{who} =~ /$self->get('defcon1_allowed')/) {
+        if ($new_defcon == 1 and not $mess->{who} =~ $self->get('defcon1_allowed')) {
             return "What did I tell you? You are NOT ALLOWED to request DEFCON 1";
         }
         my $old_defcon = $defcon_level;
