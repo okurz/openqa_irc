@@ -51,5 +51,6 @@ like($bot->tell_direct('defcon 1'), qr/What did I tell you.*/, 'do not allow set
 $bot->{handlers}->{openqa}->set(defcon1_allowed => 'test_user|foo|bar');
 like($bot->tell_direct('defcon 1'), qr/Heads up.*DEFCON increase/, 'set DEFCON works!');
 like($bot->tell_direct('defcon 5'), qr/We are down to/);
+like($bot->tell_direct('defcon 42'), qr/Err, I won't accept that/, 'do not allow setting invalid DEFCON works');
 
 done_testing();
