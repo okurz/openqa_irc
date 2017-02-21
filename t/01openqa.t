@@ -44,5 +44,7 @@ like($bot->tell_direct('help openqa'), qr/Try the following commands.*status sta
 $bot->{handlers}->{openqa}->set(staging_dashboard => 'mock_staging');
 $bot->{handlers}->{openqa}->set(url_shortener => 'v.gd');
 is($bot->tell_direct('status staging'), 'The following staging tests are failing: another_failing_module (http://v.gd/t1236), failing_module (http://v.gd/t1234, http://v.gd/t1235)');
+$bot->{handlers}->{openqa}->set(ignore_re => 'qr/\bfailing_module/');
+is($bot->tell_direct('status staging'), 'The following staging tests are failing: another_failing_module (http://v.gd/t1236)');
 
 done_testing();

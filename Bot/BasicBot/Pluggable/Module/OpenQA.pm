@@ -101,11 +101,17 @@ sub _poll_staging {
     confess "missing staging URL" unless $url;
     $log->debug("polling staging on $url");
     my $openqa_failed = $ua->get($url  => {Accept => '*/*'})->res->dom->find('.openqa-failed');
+    my $ignore = eval($self->get('ignore_re') // '') // '';
+    $log->trace('Ignore RE: ' . $ignore);
     $log->debug('Found ' . scalar @$openqa_failed . ' failed jobs');
     my %openqa_failed_map = ();
     # group tests by module name to save some space
     foreach (@$openqa_failed) {
-        push(@{$openqa_failed_map{$_->text}}, _shorten_url($_->{href}));
+        if ($_->text =~ $ignore) {
+            $log->debug('Found failing job \'' . $_->text . '\' in ignore list');
+            next;
+        }
+        push(@{$openqa_failed_map{$_->text}}, _shorten_url($self, $_->{href}));
         # TODO the test heading could be used to extract the scenario for each
         # failing test
         #my $test_heading = $ua->get($_->{href})->res->dom->at('#info_box .panel-heading')->text;
@@ -164,7 +170,7 @@ sub told {
             return "The following staging tests are failing: " . $failed_staging_str;
         }
         else {
-            return "Currently there are no failing staging tests, stay sharp!";
+            return "Currently there are no relevant failing staging tests, stay sharp!";
         }
     }
     elsif ($mess->{body} =~ /\blast builds\b/) {
