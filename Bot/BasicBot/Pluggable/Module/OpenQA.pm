@@ -7,6 +7,7 @@ use warnings;
 
 use Mojo::UserAgent;
 use Carp qw(confess carp croak);
+use Log::Log4perl;
 
 
 =pod
@@ -21,9 +22,11 @@ https://metacpan.org/pod/Bot::BasicBot::Pluggable::Module::Log
 =cut
 
 my $ua = Mojo::UserAgent->new;
+my $log;
 
 sub init {
     my ($self) = @_;
+    $log = Log::Log4perl->get_logger(ref $self);
     $self->config({
             notice_period_ready  => 600,
             host => 'openqa.opensuse.org',
@@ -84,7 +87,9 @@ sub _poll_staging {
     my ($self) = @_;
     my $url = $self->get('staging_dashboard');
     confess "missing staging URL" unless $url;
+    $log->debug("polling staging on $url");
     my $openqa_failed = $ua->get($url  => {Accept => '*/*'})->res->dom->find('.openqa-failed');
+    $log->debug('Found ' . scalar @$openqa_failed . ' failed jobs');
     my %openqa_failed_map = ();
     # group tests by module name to save some space
     foreach (@$openqa_failed) {
@@ -97,6 +102,7 @@ sub _poll_staging {
     # sorting on keys to make comparison of runs possible but still not
     # optimal as we loose which module failed first
     my $failed_str = join ', ', map { $_ . ' (' . join(', ', @{$openqa_failed_map{$_}}) . ')' } sort keys %openqa_failed_map;
+    $log->trace($failed_str);
 
     if ($defcon_level < 5 and !($failed_str eq '')) {
         $failed_str .= _gather_error_details($self, $ua, $openqa_failed) // '';
