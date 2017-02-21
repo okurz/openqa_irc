@@ -8,6 +8,7 @@ use warnings;
 use Mojo::UserAgent;
 use Carp qw(confess carp croak);
 use Log::Log4perl;
+use Switch;
 
 
 =pod
@@ -61,23 +62,34 @@ sub _gather_error_details {
 }
 
 sub _shorten_url {
-    my ($url) = @_;
+    my ($self, $url) = @_;
     confess "TODO implement: Only test paths supported right now" unless $url =~ m@tests@;
     my $short_name = $url =~ s@^.*tests/@t@r;
     unless ($short_links{$url}) {
-        my $new_tgt = "http://v.gd/$short_name";
-        my $new_tgt_link = $ua->get($new_tgt)->res->dom->at('.biglink');
-        if ($new_tgt_link and $new_tgt_link->{href} eq $url) {
-            # found already existing link not in our in-memory cache
-            $short_links{$url} = $new_tgt;
-        }
-        else {
-            my $my_url = $ua->get("https://v.gd/create.php?format=simple&url=$url&shorturl=$short_name");
-            if ($my_url->res->code != 200) {
-                carp "url shorten failed with code " . $my_url->res->code . ", returning input link instead";
+        my $shorten = $self->get('url_shortener') // '';
+        switch ($shorten) {
+            case 'v.gd' {
+                my $new_tgt = "http://v.gd/$short_name";
+                my $new_tgt_link = $ua->get($new_tgt)->res->dom->at('.biglink');
+                if ($new_tgt_link and $new_tgt_link->{href} eq $url) {
+                    # found already existing link not in our in-memory cache
+                    $short_links{$url} = $new_tgt;
+                }
+                else {
+                    my $my_url = $ua->get("https://v.gd/create.php?format=simple&url=$url&shorturl=$short_name");
+                    if ($my_url->res->code != 200) {
+                        carp "url shorten failed with code " . $my_url->res->code . ", returning input link instead";
+                        return $url;
+                    }
+                    $short_links{$url} = $my_url->res->text;
+                }
+            }
+            case 'full' {
                 return $url;
             }
-            $short_links{$url} = $my_url->res->text;
+            else {
+                return $url =~ s@tests/@t@ri;
+            }
         }
     }
     return $short_links{$url};

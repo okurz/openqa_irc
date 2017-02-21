@@ -42,6 +42,7 @@ isnt($bot->tell_indirect('perl'), 'I hear Ruby is better than perl..', 'only res
 like($bot->tell_direct('help'), qr/Ask me for help about: openqa/);
 like($bot->tell_direct('help openqa'), qr/Try the following commands.*status staging/);
 $bot->{handlers}->{openqa}->set(staging_dashboard => 'mock_staging');
+$bot->{handlers}->{openqa}->set(url_shortener => 'v.gd');
 is($bot->tell_direct('status staging'), 'The following staging tests are failing: another_failing_module (http://v.gd/t1236), failing_module (http://v.gd/t1234, http://v.gd/t1235)');
 
 done_testing();
