@@ -202,7 +202,8 @@ sub tick {
     # checks for "... % x == 0" work
     $self->{tick_count} = ($self->{tick_count} % ~0) + 5;
 
-    return unless ($self->{tick_count} % 60) == 0;  # so far not looking more often than each minute
+    # so far not looking more often than each second minute to prevent too high load on target server OBS/IBS
+    return unless ($self->{tick_count} % 120) == 0;
     my $failed_staging_str = _poll_staging($self);
     if ($failed_staging_str eq $last_staging_modules) {
         $do_not_inform_count++;
