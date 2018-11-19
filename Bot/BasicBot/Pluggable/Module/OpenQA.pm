@@ -84,11 +84,11 @@ sub _poll_staging {
     my ($self) = @_;
     my $url = $self->get('staging_dashboard');
     confess "missing staging URL" unless $url;
-    my $openqa_failed = $ua->get($url  => {Accept => '*/*'})->res->dom->find('.openqa-failed');
+    my $openqa_failed = $ua->get($url  => {Accept => '*/*'})->res->dom->find('.openqa-failed, .check-failure');
     my %openqa_failed_map = ();
     # group tests by module name to save some space
     foreach (@$openqa_failed) {
-        push(@{$openqa_failed_map{$_->text}}, _shorten_url($_->{href}));
+        push(@{$openqa_failed_map{$_->text =~ s/openqa://r }}, _shorten_url($_->{href}));
         # TODO the test heading could be used to extract the scenario for each
         # failing test
         #my $test_heading = $ua->get($_->{href})->res->dom->at('#info_box .panel-heading')->text;

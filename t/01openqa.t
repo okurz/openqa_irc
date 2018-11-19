@@ -5,7 +5,13 @@ use Mojo::Transaction;
 
 sub mock_web_body {
     my ($url) = @_;
-    if ($url =~ /mock_staging/) {
+    if ($url =~ /mock_staging_new_design/) {
+        return '<a class="check-failure" href="http://openqa/tests/1234">openqa:foo</a>
+            <a class="check-failure" href="http://openqa/tests/1235">openqa:bar</a>
+            <div id="other">some other stuff</div>
+            <a class="check-failure" href="http://openqa/tests/1236">openqa:bar</a>';
+    }
+    elsif ($url =~ /mock_staging/) {
         return '<a class="openqa-failed" href="http://openqa/tests/1234">failing_module</a>
             <a class="openqa-failed" href="http://openqa/tests/1235">failing_module</a>
             <div id="other">some other stuff</div>
@@ -44,6 +50,8 @@ like($bot->tell_direct('help'), qr/Ask me for help about: openqa/);
 like($bot->tell_direct('help openqa'), qr/Try the following commands.*status staging/);
 $bot->{handlers}->{openqa}->set(staging_dashboard => 'mock_staging');
 is($bot->tell_direct('status staging'), 'The following staging tests are failing: another_failing_module (http://v.gd/t1236), failing_module (http://v.gd/t1234, http://v.gd/t1235)');
+$bot->{handlers}->{openqa}->set(staging_dashboard => 'mock_staging_new_design');
+is($bot->tell_direct('status staging'), 'The following staging tests are failing: bar (http://v.gd/t1235, http://v.gd/t1236), foo (http://v.gd/t1234)');
 
 # defcon tests
 $bot->{handlers}->{openqa}->set(defcon1_allowed => 'foo|bar');
